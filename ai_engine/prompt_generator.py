@@ -215,12 +215,14 @@ class PromptGenerator:
             return False, "Invalid prompts_per_video"
 
         complexity = params['complexity_level']
-        if not isinstance(complexity, int) or not (1 <= complexity <= 5):
-            return False, "Invalid complexity_level (must be 1-5)"
+        min_complexity, max_complexity = self.config.get_complexity_range()
+        if not isinstance(complexity, int) or not (min_complexity <= complexity <= max_complexity):
+            return False, f"Invalid complexity_level (must be {min_complexity}-{max_complexity})"
 
         variation = params['variation_level']
-        if not isinstance(variation, int) or not (1 <= variation <= 5):
-            return False, "Invalid variation_level (must be 1-5)"
+        min_variation, max_variation = self.config.get_variation_range()
+        if not isinstance(variation, int) or not (min_variation <= variation <= max_variation):
+            return False, f"Invalid variation_level (must be {min_variation}-{max_variation})"
 
         aspect_ratio = params['aspect_ratio']
         valid_ratios = self.config.get_available_aspect_ratios()

@@ -132,9 +132,9 @@ class PromptsDialog(QDialog):
 
         self.clear_info_layout()
 
-        self.add_info_row("Complexity Level", f"{prompt['complexity_level']}/5")
+        self.add_info_row("Complexity Level", f"{prompt['complexity_level']}/10")
         self.add_info_row("Aspect Ratio", prompt['aspect_ratio'])
-        self.add_info_row("Variation Level", f"{prompt['variation_level']}/5")
+        self.add_info_row("Variation Level", f"{prompt['variation_level']}/10")
         self.add_info_row("Status", "Copied" if prompt['is_copied'] else "Generated")
         self.add_info_row("Created", prompt['created_at'][:19])
 

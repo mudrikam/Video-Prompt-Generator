@@ -77,6 +77,7 @@ class SettingsDialog(QDialog):
         self.api_key_edit = QLineEdit()
         self.api_key_edit.setEchoMode(QLineEdit.Password)
         self.api_key_edit.setPlaceholderText("Enter your GenAI API key")
+        self.api_key_edit.textChanged.connect(self.on_api_key_changed)
         api_layout.addRow("API Key:", self.api_key_edit)
 
         show_key_btn = QPushButton("Show")
@@ -87,6 +88,7 @@ class SettingsDialog(QDialog):
         self.model_combo.setEditable(True)
         models = self.config.get_available_models()
         self.model_combo.addItems(models)
+        self.model_combo.currentTextChanged.connect(self.on_model_changed)
         api_layout.addRow("Model:", self.model_combo)
 
         self.status_label = QLabel("")
@@ -101,12 +103,14 @@ class SettingsDialog(QDialog):
         min_size, max_size = self.config.get_file_size_range()
         self.max_size_spinbox.setRange(min_size, max_size)
         self.max_size_spinbox.setSuffix(" MB")
+        self.max_size_spinbox.valueChanged.connect(self.on_max_size_changed)
         video_layout.addRow("Max File Size:", self.max_size_spinbox)
 
         self.timeout_spinbox = QSpinBox()
         min_timeout, max_timeout = self.config.get_timeout_range()
         self.timeout_spinbox.setRange(min_timeout, max_timeout)
         self.timeout_spinbox.setSuffix(" seconds")
+        self.timeout_spinbox.valueChanged.connect(self.on_timeout_changed)
         video_layout.addRow("Upload Timeout:", self.timeout_spinbox)
 
         layout.addWidget(video_group)
@@ -125,6 +129,7 @@ class SettingsDialog(QDialog):
         self.default_prompts_spinbox = QSpinBox()
         min_prompts, max_prompts = self.config.get_prompts_range()
         self.default_prompts_spinbox.setRange(min_prompts, max_prompts)
+        self.default_prompts_spinbox.valueChanged.connect(self.on_default_prompts_changed)
         defaults_layout.addRow("Prompts per Video:", self.default_prompts_spinbox)
 
         self.max_prompts_spinbox = QSpinBox()
@@ -134,16 +139,19 @@ class SettingsDialog(QDialog):
         self.default_complexity_spinbox = QSpinBox()
         min_complexity, max_complexity = self.config.get_complexity_range()
         self.default_complexity_spinbox.setRange(min_complexity, max_complexity)
+        self.default_complexity_spinbox.valueChanged.connect(self.on_default_complexity_changed)
         defaults_layout.addRow("Default Complexity:", self.default_complexity_spinbox)
 
         self.default_variation_spinbox = QSpinBox()
         min_variation, max_variation = self.config.get_variation_range()
         self.default_variation_spinbox.setRange(min_variation, max_variation)
+        self.default_variation_spinbox.valueChanged.connect(self.on_default_variation_changed)
         defaults_layout.addRow("Default Variation:", self.default_variation_spinbox)
 
         self.default_aspect_combo = QComboBox()
         aspect_ratios = self.config.get_available_aspect_ratios()
         self.default_aspect_combo.addItems(aspect_ratios)
+        self.default_aspect_combo.currentTextChanged.connect(self.on_default_aspect_changed)
         defaults_layout.addRow("Default Aspect Ratio:", self.default_aspect_combo)
 
         layout.addWidget(defaults_group)
@@ -164,18 +172,21 @@ class SettingsDialog(QDialog):
         min_width, max_width = window_ranges['width']
         self.window_width_spinbox.setRange(min_width, max_width)
         self.window_width_spinbox.setSuffix(" px")
+        self.window_width_spinbox.valueChanged.connect(self.on_window_width_changed)
         window_layout.addRow("Default Width:", self.window_width_spinbox)
 
         self.window_height_spinbox = QSpinBox()
         min_height, max_height = window_ranges['height']
         self.window_height_spinbox.setRange(min_height, max_height)
         self.window_height_spinbox.setSuffix(" px")
+        self.window_height_spinbox.valueChanged.connect(self.on_window_height_changed)
         window_layout.addRow("Default Height:", self.window_height_spinbox)
 
         self.progress_interval_spinbox = QSpinBox()
         min_interval, max_interval = self.config.get_progress_interval_range()
         self.progress_interval_spinbox.setRange(min_interval, max_interval)
         self.progress_interval_spinbox.setSuffix(" ms")
+        self.progress_interval_spinbox.valueChanged.connect(self.on_progress_interval_changed)
         window_layout.addRow("Progress Update Interval:", self.progress_interval_spinbox)
 
         layout.addWidget(window_group)
@@ -192,18 +203,22 @@ class SettingsDialog(QDialog):
         db_layout = QFormLayout(db_group)
 
         self.db_filename_edit = QLineEdit()
+        self.db_filename_edit.textChanged.connect(self.on_db_filename_changed)
         db_layout.addRow("Database File:", self.db_filename_edit)
 
         self.auto_cleanup_checkbox = QCheckBox("Enable automatic cleanup")
+        self.auto_cleanup_checkbox.stateChanged.connect(self.on_auto_cleanup_changed)
         db_layout.addRow("", self.auto_cleanup_checkbox)
 
         self.cleanup_days_spinbox = QSpinBox()
         min_cleanup, max_cleanup = self.config.get_cleanup_days_range()
         self.cleanup_days_spinbox.setRange(min_cleanup, max_cleanup)
         self.cleanup_days_spinbox.setSuffix(" days")
+        self.cleanup_days_spinbox.valueChanged.connect(self.on_cleanup_days_changed)
         db_layout.addRow("Cleanup after:", self.cleanup_days_spinbox)
 
         self.backup_checkbox = QCheckBox("Enable automatic backup")
+        self.backup_checkbox.stateChanged.connect(self.on_backup_changed)
         db_layout.addRow("", self.backup_checkbox)
 
         layout.addWidget(db_group)
@@ -355,3 +370,80 @@ class SettingsDialog(QDialog):
                 QMessageBox.critical(self, "Error", f"Failed to reset settings: {str(e)}")
         else:
             print(f"Error: Failed to reset settings: {str(e)}")
+
+    def on_api_key_changed(self):
+        """Handle API key change"""
+        self.config.set_api_key(self.api_key_edit.text())
+        self.config.save_config()
+
+    def on_model_changed(self):
+        """Handle model change"""
+        self.config.set("api.model_name", self.model_combo.currentText())
+        self.config.save_config()
+
+    def on_max_size_changed(self):
+        """Handle max file size change"""
+        self.config.set("video.max_file_size_mb", self.max_size_spinbox.value())
+        self.config.save_config()
+
+    def on_timeout_changed(self):
+        """Handle timeout change"""
+        self.config.set("video.upload_timeout_seconds", self.timeout_spinbox.value())
+        self.config.save_config()
+
+    def on_default_prompts_changed(self):
+        """Handle default prompts change"""
+        self.config.set("generation.default_prompts_per_video", self.default_prompts_spinbox.value())
+        self.config.save_config()
+
+    def on_default_complexity_changed(self):
+        """Handle default complexity change"""
+        self.config.set("generation.default_complexity_level", self.default_complexity_spinbox.value())
+        self.config.save_config()
+
+    def on_default_variation_changed(self):
+        """Handle default variation change"""
+        self.config.set("generation.default_variation_level", self.default_variation_spinbox.value())
+        self.config.save_config()
+
+    def on_default_aspect_changed(self):
+        """Handle default aspect ratio change"""
+        self.config.set("generation.default_aspect_ratio", self.default_aspect_combo.currentText())
+        self.config.save_config()
+
+    def on_window_width_changed(self):
+        """Handle window width change"""
+        self.config.set("ui.window_width", self.window_width_spinbox.value())
+        self.config.save_config()
+
+    def on_window_height_changed(self):
+        """Handle window height change"""
+        self.config.set("ui.window_height", self.window_height_spinbox.value())
+        self.config.save_config()
+
+    def on_progress_interval_changed(self):
+        """Handle progress interval change"""
+        self.config.set("ui.progress_update_interval", self.progress_interval_spinbox.value())
+        self.config.save_config()
+
+    def on_db_filename_changed(self):
+        """Handle database filename change"""
+        self.config.set("database.filename", self.db_filename_edit.text())
+        self.config.save_config()
+
+    def on_auto_cleanup_changed(self):
+        """Handle auto cleanup change"""
+        cleanup_days = self.cleanup_days_spinbox.value() if self.auto_cleanup_checkbox.isChecked() else 0
+        self.config.set("database.auto_cleanup_days", cleanup_days)
+        self.config.save_config()
+
+    def on_cleanup_days_changed(self):
+        """Handle cleanup days change"""
+        if self.auto_cleanup_checkbox.isChecked():
+            self.config.set("database.auto_cleanup_days", self.cleanup_days_spinbox.value())
+            self.config.save_config()
+
+    def on_backup_changed(self):
+        """Handle backup change"""
+        self.config.set("database.backup_enabled", self.backup_checkbox.isChecked())
+        self.config.save_config()

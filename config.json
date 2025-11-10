@@ -11,30 +11,40 @@
         ]
     },
     "generation": {
-        "default_prompts_per_video": 3,
-        "default_complexity_level": 3,
+        "default_prompts_per_video": 10,
+        "default_complexity_level": 4,
         "default_aspect_ratio": "16:9",
-        "default_variation_level": 3,
-    "max_prompts_per_video": 100,
+        "default_variation_level": 2,
+        "max_prompts_per_video": 100,
         "min_prompts_per_video": 1,
         "max_prompts_per_batch": 5,
-        "max_complexity_level": 5,
+        "max_complexity_level": 10,
         "min_complexity_level": 1,
-        "max_variation_level": 5,
+        "max_variation_level": 10,
         "min_variation_level": 1,
         "complexity_levels": [
-            "Basic description",
-            "Detailed scene analysis",
-            "Advanced cinematography",
-            "Professional production",
-            "Expert creative direction"
+            "Very simple, basic description only",
+            "Simple with minimal details",
+            "Basic details included",
+            "Moderate level of detail",
+            "Detailed description",
+            "Very detailed with specifics",
+            "Highly detailed and comprehensive",
+            "Extremely detailed with all aspects",
+            "Maximum detail and complexity",
+            "Ultimate detail with every possible aspect"
         ],
         "variation_instructions": {
-            "1": "Focus on the main subject with minimal creative interpretation.",
-            "2": "Add some creative elements while staying close to the original.",
-            "3": "Balance original content with moderate creative variations.",
-            "4": "Take creative liberties while maintaining the core theme.",
-            "5": "Maximum creative interpretation and artistic freedom."
+            "1": "Minimal variation: Only change minor details like colors, small objects, or background elements. Keep main subjects, actions, and setting identical.",
+            "2": "Slight variation: Can modify lighting slightly, add/remove small background elements, or make minor changes to secondary subjects.",
+            "3": "Moderate variation: Allow changes to lighting, time of day, weather, or add complementary elements that fit the scene naturally.",
+            "4": "Some creative freedom: Can change secondary subjects, add new background elements, modify clothing/styles, or adjust the mood slightly.",
+            "5": "Balanced creativity: Mix of fidelity and freedom - can change setting details, add new elements, modify character appearances, or adjust composition.",
+            "6": "Increased freedom: Can significantly change backgrounds, add new characters/elements, modify the main action slightly, or change the overall mood.",
+            "7": "High creativity: Substantial changes allowed - can alter the main setting, change character roles, add dramatic elements, or reinterpret the core concept.",
+            "8": "Very high creativity: Major reinterpretations - can change the time period, location completely, character identities, or fundamental story elements.",
+            "9": "Extreme creativity: Almost complete departure - can create entirely new narratives, change genres, or make radical conceptual changes while keeping only the vaguest reference.",
+            "10": "Maximum creative freedom: Unlimited interpretation - can deviate completely from the original, using only the faintest inspiration from the source material."
         },
         "aspect_ratios": {
             "16:9": "Widescreen landscape format",
@@ -56,7 +66,6 @@
         "max_window_height": 1500,
         "min_progress_interval": 50,
         "max_progress_interval": 1000,
-
         "progress_update_interval": 100,
         "status_colors": {
             "pending": "#FFD700",
@@ -69,7 +78,7 @@
     "database": {
         "filename": "video_prompts.db",
         "backup_enabled": true,
-        "auto_cleanup_days": 30,
+        "auto_cleanup_days": 1,
         "min_cleanup_days": 1,
         "max_cleanup_days": 365
     },

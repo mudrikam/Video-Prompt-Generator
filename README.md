@@ -14,9 +14,9 @@ Aplikasi desktop untuk menggenerate AI prompts dari video menggunakan Google Gen
 - **Secure API Key Management**: API key disimpan di `.env` file (tidak di-track git)
 - **Customizable Parameters**: 
   - Jumlah prompt per video (1-10)
-  - Level kompleksitas (1-5)
+  - Level kompleksitas (1-10)
   - Aspect ratio (16:9, 1:1, 9:16)
-  - Level variasi (1-5)
+  - Level variasi (1-10)
 - **Database Storage**: Semua data tersimpan di SQLite database
 - **Copy Management**: Right-click copy dengan status tracking
 - **Progress Tracking**: Real-time progress bar dan status
@@ -55,13 +55,18 @@ Aplikasi desktop untuk menggenerate AI prompts dari video menggunakan Google Gen
   - Request besar otomatis dipecah menjadi batch kecil (max 5 per batch)
   - Misal: 20 prompts = 4 batch @ 5 prompts
 - **Complexity Level**: 
-  - 1: Basic description
-  - 2: Detailed scene analysis
-  - 3: Advanced cinematography  
-  - 4: Professional production
-  - 5: Expert creative direction
+  - 1: Very simple, basic description only
+  - 2: Simple with minimal details
+  - 3: Basic details included
+  - 4: Moderate level of detail
+  - 5: Detailed description
+  - 6: Very detailed with specifics
+  - 7: Highly detailed and comprehensive
+  - 8: Extremely detailed with all aspects
+  - 9: Maximum detail and complexity
+  - 10: Ultimate detail with every possible aspect
 - **Aspect Ratio**: Format target video (16:9, 1:1, 9:16)
-- **Variation Level**: Tingkat variasi dalam prompt (1-5)
+- **Variation Level**: Tingkat variasi dalam prompt (1-10)
 
 ### 3. Generate Prompts
 1. Pilih mode generation (Selected/All/Ungenerated)

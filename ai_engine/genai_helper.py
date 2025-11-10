@@ -90,9 +90,9 @@ class GenAIHelper:
 
         Args:
             uploaded_file: File already uploaded to GenAI
-            complexity_level: Complexity level (1-5)
+            complexity_level: Complexity level (1-10)
             aspect_ratio: Target aspect ratio
-            variation_level: Variation level (1-5)
+            variation_level: Variation level (1-10)
             prompts_count: Number of prompts requested
         """
         if not self.client:
@@ -129,26 +129,55 @@ class GenAIHelper:
         variation_instructions = self.config.get_variation_instructions()
         variation_instruction = variation_instructions[str(variation_level)]
 
-        prompt = f"""Analyze this video and generate {prompts_count} distinct AI art prompts based on it.
+        prompt = f"""Analyze this video and generate {prompts_count} distinct AI video generation prompts based on it.
 
-REQUIREMENTS:
+VIDEO GENERATION REQUIREMENTS:
 - Complexity Level: {complexity_desc}
 - Target Aspect Ratio: {aspect_ratio} ({aspect_desc})
-- Variation Strategy: {variation_instruction}
-- Generate EXACTLY {prompts_count} different prompts
-- Each prompt should be unique and creative
-- Format as JSON array with "prompts" key
+- Variation Elements: {variation_instruction}
+- Generate EXACTLY {prompts_count} different video prompts
 
-Please provide the response as valid JSON in this format:
+VIDEO ANALYSIS INSTRUCTIONS:
+1. Analyze the video content including:
+   - Main subjects, characters, and objects
+   - Actions, movements, and behaviors
+   - Setting, environment, and background
+   - Lighting conditions and mood
+   - Camera angles, movements, and framing
+   - Visual style, colors, and aesthetics
+   - Audio cues and sound-related elements
+
+2. Create comprehensive video generation prompts that include:
+   - Detailed scene description with subjects and actions
+   - Camera techniques (shots, angles, movements, transitions)
+   - Lighting specifications and visual effects
+   - Audio and sound design elements
+   - Style, mood, and artistic direction
+   - Technical specifications for video generation
+
+3. Optimize for {aspect_ratio} aspect ratio:
+   - Consider composition rules for {aspect_desc}
+   - Adjust camera framing and movement accordingly
+   - Specify aspect ratio requirements in the prompt
+
+4. Apply variation elements (level {variation_level}):
+   {variation_instruction}
+
+IMPORTANT RESTRICTIONS:
+- DO NOT start any prompt with the letter "A"
+- DO NOT mention or specify any duration, timing, or length
+- Focus only on visual content and style according to the settings
+
+Format as JSON array with "prompts" key containing {prompts_count} complete video generation prompts suitable for AI video tools like RunwayML, Pika Labs, or similar platforms.
+
+Response format:
 {{
     "prompts": [
-        "first prompt text here...",
-        "second prompt text here...",
-        "third prompt text here..."
+        "first complete video prompt here...",
+        "second complete video prompt here...",
+        "third complete video prompt here..."
     ]
-}}
-
-Make sure each prompt is detailed, creative, and suitable for AI art generation tools."""
+}}""".strip()
 
         return prompt
 
@@ -189,55 +218,6 @@ Make sure each prompt is detailed, creative, and suitable for AI art generation 
             prompts = [response_text.strip()]
 
         return prompts[:expected_count]
-
-    def _build_base_prompt(self, complexity_desc: str, aspect_ratio: str,
-                          aspect_desc: str, variation_level: int, prompt_index: int) -> str:
-        """Build base prompt for generation"""
-
-        variation_instructions = self.config.get_variation_instructions()
-        variation_instruction = variation_instructions[str(variation_level)]
-
-        base_prompt = f"""
-Analyze this video and create a detailed video prompt for AI video generation.
-
-Requirements:
-- Complexity Level: {complexity_desc}
-- Target Aspect Ratio: {aspect_ratio} ({aspect_desc})
-- Variation Approach: {variation_instruction}
-- Prompt Variation: #{prompt_index}
-
-Instructions:
-1. First, analyze the video content, including:
-   - Main subjects and objects
-   - Actions and movements
-   - Setting and environment
-   - Lighting and mood
-   - Camera angles and movements
-   - Visual style and aesthetics
-
-2. Create a comprehensive prompt that includes:
-   - Detailed description of subjects
-   - Specific actions and movements
-   - Environment and setting details
-   - Camera movement and angles
-   - Lighting and mood specifications
-   - Visual style and technical aspects
-   - Duration and timing if relevant
-
-3. Optimize the prompt for {aspect_ratio} format:
-   - Consider composition suitable for {aspect_desc}
-   - Adjust framing and camera angles accordingly
-   - Mention aspect ratio requirements if necessary
-
-4. Apply variation level {variation_level}/5:
-   {variation_instruction}
-
-5. Format the output as a single, coherent video generation prompt that can be used directly with AI video generation tools.
-
-Generate only the final prompt, no additional explanation or analysis.
-        """.strip()
-
-        return base_prompt
 
     def generate_multiple_prompts(self, video_path: str, num_prompts: int,
                                 complexity_level: int, aspect_ratio: str,

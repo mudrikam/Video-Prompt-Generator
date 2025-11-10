@@ -106,6 +106,7 @@ class MainWindow(QMainWindow):
         min_prompts, max_prompts = self.config.get_prompts_range()
         self.prompts_spinbox.setRange(min_prompts, max_prompts)
         self.prompts_spinbox.setValue(self.config.get_default_prompts_per_video())
+        self.prompts_spinbox.valueChanged.connect(self.on_prompts_changed)
         max_batch = self.config.get("generation.max_prompts_per_batch")
         self.prompts_spinbox.setToolTip(
             f"Total prompts per video. Large requests are auto-split into batches "
@@ -119,10 +120,12 @@ class MainWindow(QMainWindow):
         self.complexity_slider.setMinimumHeight(25)
         min_complexity, max_complexity = self.config.get_complexity_range()
         self.complexity_slider.setRange(min_complexity, max_complexity)
-        self.complexity_slider.setValue(self.config.get("generation.default_complexity_level"))
+        default_complexity = self.config.get("generation.default_complexity_level")
+        self.complexity_slider.setValue(default_complexity)
+        self.complexity_slider.valueChanged.connect(self.on_complexity_changed)
         layout.addWidget(self.complexity_slider, 1, 1)
 
-        self.complexity_label = QLabel("3")
+        self.complexity_label = QLabel(str(default_complexity))
         layout.addWidget(self.complexity_label, 1, 2)
 
         variation_label = QLabel("Variation:")
@@ -131,10 +134,12 @@ class MainWindow(QMainWindow):
         self.variation_slider.setMinimumHeight(25)
         min_variation, max_variation = self.config.get_variation_range()
         self.variation_slider.setRange(min_variation, max_variation)
-        self.variation_slider.setValue(self.config.get("generation.default_variation_level"))
+        default_variation = self.config.get("generation.default_variation_level")
+        self.variation_slider.setValue(default_variation)
+        self.variation_slider.valueChanged.connect(self.on_variation_changed)
         layout.addWidget(self.variation_slider, 2, 1)
 
-        self.variation_label = QLabel("3")
+        self.variation_label = QLabel(str(default_variation))
         layout.addWidget(self.variation_label, 2, 2)
 
         aspect_label = QLabel("Ratio:")
@@ -145,6 +150,7 @@ class MainWindow(QMainWindow):
         self.aspect_ratio_combo.addItems(aspect_ratios)
         default_ratio = self.config.get("generation.default_aspect_ratio")
         self.aspect_ratio_combo.setCurrentText(default_ratio)
+        self.aspect_ratio_combo.currentTextChanged.connect(self.on_aspect_ratio_changed)
         layout.addWidget(self.aspect_ratio_combo, 3, 1)
 
         self.complexity_slider.valueChanged.connect(
@@ -479,6 +485,8 @@ class MainWindow(QMainWindow):
             return
 
         self.is_generating = True
+        self._last_generation_video_count = len(videos)
+        self._last_generation_failed_count = 0
         self.start_stop_btn.setText("Stop Generation")
         self.start_stop_btn.setIcon(qta.icon('fa5s.stop', color='white'))
         self.start_stop_btn.setStyleSheet("""
@@ -551,7 +559,22 @@ class MainWindow(QMainWindow):
         self.reset_generation_ui()
 
         if success:
-            self.status_bar.showMessage("Generation completed successfully")
+            # Get latest stats for detailed status message
+            try:
+                stats = self.db.get_stats()
+                processed_videos = getattr(self, '_last_generation_video_count', 0)
+                generated_prompts = stats.get('total_prompts', 0)
+                failed_videos = stats.get('error_videos', 0)
+
+                status_msg = f"Generation completed! Processed: {processed_videos} videos, Generated: {generated_prompts} prompts"
+                if failed_videos > 0:
+                    status_msg += f", Failed: {failed_videos} videos"
+
+                self.status_bar.showMessage(status_msg)
+                print(status_msg)
+            except Exception as e:
+                self.status_bar.showMessage("Generation completed successfully")
+                print(f"Generation completed successfully (stats error: {e})")
         else:
             self.status_bar.showMessage(f"Generation failed: {message}")
             print(f"Generation error: {message}")
@@ -687,7 +710,69 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self)
         if dialog.exec_() == SettingsDialog.Accepted:
             self.config.reload()
+            self.refresh_ui_from_config()
             self.status_bar.showMessage("Settings updated")
+
+    def refresh_ui_from_config(self):
+        """Refresh UI controls from current config values"""
+        try:
+            # Update prompts spinbox range and value
+            min_prompts, max_prompts = self.config.get_prompts_range()
+            self.prompts_spinbox.setRange(min_prompts, max_prompts)
+            self.prompts_spinbox.setValue(self.config.get_default_prompts_per_video())
+
+            # Update complexity slider range and value
+            min_complexity, max_complexity = self.config.get_complexity_range()
+            self.complexity_slider.setRange(min_complexity, max_complexity)
+            complexity_value = self.config.get("generation.default_complexity_level")
+            self.complexity_slider.setValue(complexity_value)
+            self.complexity_label.setText(str(complexity_value))
+
+            # Update variation slider range and value
+            min_variation, max_variation = self.config.get_variation_range()
+            self.variation_slider.setRange(min_variation, max_variation)
+            variation_value = self.config.get("generation.default_variation_level")
+            self.variation_slider.setValue(variation_value)
+            self.variation_label.setText(str(variation_value))
+
+            # Update aspect ratio combo
+            default_ratio = self.config.get("generation.default_aspect_ratio")
+            self.aspect_ratio_combo.setCurrentText(default_ratio)
+
+        except Exception as e:
+            print(f"Error refreshing UI from config: {e}")
+
+    def on_prompts_changed(self, value):
+        """Save prompts per video setting"""
+        try:
+            self.config.set("generation.default_prompts_per_video", value)
+            self.config.save_config()
+        except Exception as e:
+            print(f"Error saving prompts setting: {e}")
+
+    def on_complexity_changed(self, value):
+        """Save complexity level setting"""
+        try:
+            self.config.set("generation.default_complexity_level", value)
+            self.config.save_config()
+        except Exception as e:
+            print(f"Error saving complexity setting: {e}")
+
+    def on_variation_changed(self, value):
+        """Save variation level setting"""
+        try:
+            self.config.set("generation.default_variation_level", value)
+            self.config.save_config()
+        except Exception as e:
+            print(f"Error saving variation setting: {e}")
+
+    def on_aspect_ratio_changed(self, value):
+        """Save aspect ratio setting"""
+        try:
+            self.config.set("generation.default_aspect_ratio", value)
+            self.config.save_config()
+        except Exception as e:
+            print(f"Error saving aspect ratio setting: {e}")
 
     def show_prompt_context_menu(self, position):
         """Show context menu for prompt table"""
