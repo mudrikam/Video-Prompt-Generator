@@ -34,7 +34,7 @@ Aplikasi desktop untuk menggenerate AI prompts dari video menggunakan Google Gen
 
 3. **Setup API Key**:
    - File `.env` akan otomatis dibuat saat pertama kali menjalankan aplikasi
-   - Edit file `.env` dan isi dengan API key Anda:
+   - Edit file `.env` dan isi dengan API key kamu:
    ```
    GENAI_API_KEY=your_actual_api_key_here
    ```
@@ -85,7 +85,7 @@ Aplikasi desktop untuk menggenerate AI prompts dari video menggunakan Google Gen
 ## Struktur Folder
 
 ```
-├── main.py                     # Entry point aplikasi
+├── main.py                    # Entry point aplikasi
 ├── config.json                # Konfigurasi aplikasi
 ├── .env                       # API key (tidak di-track git)
 ├── .env.example               # Template untuk .env
@@ -174,4 +174,8 @@ Settings aplikasi di `config.json`:
 
 ## License
 
-This project is for internal use only.
+MIT License
+
+Singkatnya, kamu bebas menggunakan, menyalin, memodifikasi, dan mendistribusikan kode ini — termasuk untuk tujuan komersial — selama kamu menyertakan pemberitahuan hak cipta dan teks lisensi MIT yang asli. Lisensi ini juga menyatakan bahwa kode diberikan "as-is" tanpa jaminan apa pun; pemilik tidak bertanggung jawab atas kerusakan yang timbul dari penggunaan perangkat lunak.
+
+Lihat file `LICENSE` untuk teks lengkap lisensi MIT.

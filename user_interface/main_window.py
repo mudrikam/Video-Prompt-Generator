@@ -191,22 +191,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(8, 8, 8, 8)  # Reasonable margins
         layout.setSpacing(8)  # Good spacing
         
-        # Generation mode selector
-        mode_layout = QHBoxLayout()
-        mode_label = QLabel("Mode:")
-        mode_layout.addWidget(mode_label)
-        
-        self.generation_mode_combo = QComboBox()
-        self.generation_mode_combo.addItems([
-            "Selected Videos",
-            "All Videos", 
-            "Ungenerated Only"
-        ])
-        self.generation_mode_combo.setCurrentIndex(2)  # Default: Ungenerated Only
-        self.generation_mode_combo.setMinimumHeight(25)
-        mode_layout.addWidget(self.generation_mode_combo, 1)
-        layout.addLayout(mode_layout)
-        
+        # (Mode selector moved below the Generate button for cleaner layout)
         # Single Start/Stop button (bergantian)
         self.start_stop_btn = QPushButton("Generate Prompts")
         self.start_stop_btn.setStyleSheet("""
@@ -230,6 +215,22 @@ class MainWindow(QMainWindow):
         self.start_stop_btn.setIcon(qta.icon('fa5s.play', color='white'))
         self.start_stop_btn.clicked.connect(self.toggle_generation)
         layout.addWidget(self.start_stop_btn)
+        
+        # Generation mode selector (moved under the main Generate button)
+        mode_layout = QHBoxLayout()
+        mode_label = QLabel("Mode:")
+        mode_layout.addWidget(mode_label)
+        
+        self.generation_mode_combo = QComboBox()
+        self.generation_mode_combo.addItems([
+            "Selected Videos",
+            "All Videos", 
+            "Ungenerated Only"
+        ])
+        self.generation_mode_combo.setCurrentIndex(2)  # Default: Ungenerated Only
+        self.generation_mode_combo.setMinimumHeight(25)
+        mode_layout.addWidget(self.generation_mode_combo, 1)
+        layout.addLayout(mode_layout)
         
         # Horizontal layout untuk Clear dan Settings buttons
         buttons_layout = QHBoxLayout()
@@ -312,9 +313,14 @@ class MainWindow(QMainWindow):
             display_text = (prompt_text[:100] + "...") if len(prompt_text) > 100 else prompt_text
             prompt_item = QTableWidgetItem(display_text)
             
-            # Yellow text (foreground) for prompts that were copied
+            # Yellow/orange text (foreground) for prompts that were copied
             if prompt.get('is_copied', False):
-                prompt_item.setData(Qt.ForegroundRole, QColor(255, 195, 42))
+                try:
+                    qcolors = self.config.get_status_qcolors()
+                    copied_color = qcolors.get('copied', QColor(255, 195, 42))
+                except Exception:
+                    copied_color = QColor(255, 195, 42)
+                prompt_item.setData(Qt.ForegroundRole, copied_color)
             
             self.prompt_table.setItem(row, 0, prompt_item)
             
@@ -322,9 +328,14 @@ class MainWindow(QMainWindow):
             char_len = len(prompt_text)
             char_item = QTableWidgetItem(str(char_len))
             
-            # Yellow text (foreground) for prompts that were copied
+            # Yellow/orange text (foreground) for prompts that were copied
             if prompt.get('is_copied', False):
-                char_item.setData(Qt.ForegroundRole, QColor(255, 195, 42))
+                try:
+                    qcolors = self.config.get_status_qcolors()
+                    copied_color = qcolors.get('copied', QColor(255, 195, 42))
+                except Exception:
+                    copied_color = QColor(255, 195, 42)
+                char_item.setData(Qt.ForegroundRole, copied_color)
                 
             self.prompt_table.setItem(row, 1, char_item)
             

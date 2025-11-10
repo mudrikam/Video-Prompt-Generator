@@ -184,6 +184,33 @@ class ConfigManager:
     def get_status_colors(self) -> dict:
         """Get dictionary warna status"""
         return self.get("ui.status_colors")
+
+    def get_status_qcolors(self) -> dict:
+        """Get status colors converted to Qt QColor objects.
+
+        Returns a dict mapping status keys to QColor instances. Falls back to a
+        sensible default QColor(0,0,0) if conversion fails.
+        """
+        try:
+            from PySide6.QtGui import QColor
+        except Exception:
+            # PySide6 may not be available in some non-UI contexts; return hex dict instead
+            return self.get_status_colors()
+
+        colors = self.get_status_colors() or {}
+        qcolors = {}
+        for key, hexval in colors.items():
+            try:
+                qcolors[key] = QColor(hexval)
+            except Exception:
+                try:
+                    # If hexval is already an rgb tuple like "255,195,42"
+                    parts = [int(p) for p in str(hexval).split(',')]
+                    qcolors[key] = QColor(*parts)
+                except Exception:
+                    qcolors[key] = QColor(0, 0, 0)
+
+        return qcolors
     
     def get_table_columns(self) -> list:
         """Get nama kolom tabel"""

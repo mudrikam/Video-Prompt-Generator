@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont, QColor
 from typing import List, Dict, Any
 from data_manager.database_helper import get_db_helper
+from app_utils.config_manager import get_config_manager
 
 
 class PromptsDialog(QDialog):
@@ -125,12 +126,21 @@ class PromptsDialog(QDialog):
             # show full prompt on hover
             item.setToolTip(full_text)
 
-            # Color coding berdasarkan status: use yellow text (foreground) instead of background
+            # Color coding berdasarkan status: use configured text color (foreground) instead of hard-coded
             if is_copied:
                 try:
-                    item.setForeground(QColor(255, 195, 42))
+                    # Use singleton config manager to get qcolors if available
+                    qcolors = get_config_manager().get_status_qcolors() or {}
+                    copied_color = qcolors.get('copied') if isinstance(qcolors, dict) else None
+                    if not copied_color:
+                        copied_color = QColor(255, 195, 42)
+                    item.setForeground(copied_color)
                 except Exception:
-                    pass
+                    # Fallback to previous hard-coded color on any failure
+                    try:
+                        item.setForeground(QColor(255, 195, 42))
+                    except Exception:
+                        pass
 
             self.prompts_list.addItem(item)
         

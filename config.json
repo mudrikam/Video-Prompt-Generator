@@ -62,7 +62,7 @@
             "pending": "#FFD700",
             "processing": "#87CEEB",
             "completed": "#98FB98",
-            "copied": "#FFFF99",
+            "copied": "#FFC32A",
             "error": "#FFB6C1"
         }
     },
