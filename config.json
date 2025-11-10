@@ -1,0 +1,91 @@
+{
+    "api": {
+        "genai_api_key": "",
+        "model_name": "gemini-2.5-flash",
+        "available_models": [
+            "gemini-2.5-pro",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-lite"
+        ]
+    },
+    "generation": {
+        "default_prompts_per_video": 3,
+        "default_complexity_level": 3,
+        "default_aspect_ratio": "16:9",
+        "default_variation_level": 3,
+    "max_prompts_per_video": 100,
+        "min_prompts_per_video": 1,
+        "max_prompts_per_batch": 5,
+        "max_complexity_level": 5,
+        "min_complexity_level": 1,
+        "max_variation_level": 5,
+        "min_variation_level": 1,
+        "complexity_levels": [
+            "Basic description",
+            "Detailed scene analysis",
+            "Advanced cinematography",
+            "Professional production",
+            "Expert creative direction"
+        ],
+        "variation_instructions": {
+            "1": "Focus on the main subject with minimal creative interpretation.",
+            "2": "Add some creative elements while staying close to the original.",
+            "3": "Balance original content with moderate creative variations.",
+            "4": "Take creative liberties while maintaining the core theme.",
+            "5": "Maximum creative interpretation and artistic freedom."
+        },
+        "aspect_ratios": {
+            "16:9": "Widescreen landscape format",
+            "1:1": "Square format for social media",
+            "9:16": "Vertical portrait format"
+        },
+        "available_aspect_ratios": [
+            "16:9",
+            "1:1",
+            "9:16"
+        ]
+    },
+    "ui": {
+        "window_width": 1200,
+        "window_height": 800,
+        "min_window_width": 800,
+        "max_window_width": 2000,
+        "min_window_height": 600,
+        "max_window_height": 1500,
+        "min_progress_interval": 50,
+        "max_progress_interval": 1000,
+
+        "progress_update_interval": 100,
+        "status_colors": {
+            "pending": "#FFD700",
+            "processing": "#87CEEB",
+            "completed": "#98FB98",
+            "copied": "#FFFF99",
+            "error": "#FFB6C1"
+        }
+    },
+    "database": {
+        "filename": "video_prompts.db",
+        "backup_enabled": true,
+        "auto_cleanup_days": 30,
+        "min_cleanup_days": 1,
+        "max_cleanup_days": 365
+    },
+    "video": {
+        "supported_formats": [
+            ".mp4",
+            ".avi",
+            ".mov",
+            ".mkv",
+            ".webm"
+        ],
+        "max_file_size_mb": 500,
+        "min_file_size_mb": 1,
+        "max_file_size_limit": 2000,
+        "upload_timeout_seconds": 300,
+        "min_upload_timeout": 30,
+        "max_upload_timeout": 600
+    }
+}
